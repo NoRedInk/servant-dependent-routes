@@ -1,0 +1,23 @@
+name: servant-dependent-routes
+synopsis: Provides combinators for dependently typed routes in the Servant ecosystem
+description: Please see the README at <https://github.com/NoRedInk/servant-dependent-routes/tree/trunk#readme>.
+homepage: https://github.com/NoRedInk/servant-dependent-routes/tree/trunk#readme
+author: NoRedInk
+version: 0.1.0.0
+maintainer: haskell-open-source@noredink.com
+copyright: 2025 NoRedInk Corp.
+github: NoRedInk/servant-dependent-routes
+license-file: LICENSE
+category: Web
+extra-doc-files:
+  - README.md
+  - LICENSE
+dependencies:
+  - servant
+library:
+  exposed-modules: 
+    - Servant.Dependent
+  source-dirs:
+    - src
+ghc-options:
+  - -Wall

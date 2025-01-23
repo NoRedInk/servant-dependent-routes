@@ -1,0 +1,38 @@
+cabal-version: 1.18
+
+-- This file has been generated from package.yaml by hpack version 0.34.7.
+--
+-- see: https://github.com/sol/hpack
+
+name:           servant-dependent-routes
+version:        0.1.0.0
+synopsis:       Provides combinators for dependently typed routes in the Servant ecosystem
+description:    Please see the README at <https://github.com/NoRedInk/servant-dependent-routes/tree/trunk#readme>.
+category:       Web
+homepage:       https://github.com/NoRedInk/servant-dependent-routes/tree/trunk#readme
+bug-reports:    https://github.com/NoRedInk/servant-dependent-routes/issues
+author:         NoRedInk
+maintainer:     haskell-open-source@noredink.com
+copyright:      2025 NoRedInk Corp.
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-doc-files:
+    README.md
+    LICENSE
+
+source-repository head
+  type: git
+  location: https://github.com/NoRedInk/servant-dependent-routes
+
+library
+  exposed-modules:
+      Servant.Dependent
+  other-modules:
+      Paths_servant_dependent_routes
+  hs-source-dirs:
+      src
+  ghc-options: -Wall
+  build-depends:
+      servant
+  default-language: Haskell2010
