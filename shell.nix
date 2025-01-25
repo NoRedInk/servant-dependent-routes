@@ -7,7 +7,7 @@ in with nixpkgs;
 
 pkgs.mkShell {
   buildInputs = [
-    haskell.compiler.ghc947
+    haskellPackages.ghc
     nix-search-cli
     haskellPackages.ghcid
     haskellPackages.cabal-install
@@ -15,5 +15,6 @@ pkgs.mkShell {
     hlint
     ormolu
     haskellPackages.haskell-language-server
+    zlib
   ];
 }
