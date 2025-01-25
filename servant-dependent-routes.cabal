@@ -1,6 +1,6 @@
 cabal-version: 1.18
 
--- This file has been generated from package.yaml by hpack version 0.34.7.
+-- This file has been generated from package.yaml by hpack version 0.36.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -34,5 +34,15 @@ library
       src
   ghc-options: -Wall
   build-depends:
-      servant
+      base
+    , bytestring
+    , constraints
+    , http-types
+    , mtl
+    , resourcet
+    , servant
+    , servant-client-core
+    , servant-server
+    , singletons
+    , wai
   default-language: Haskell2010

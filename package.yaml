@@ -13,7 +13,17 @@ extra-doc-files:
   - README.md
   - LICENSE
 dependencies:
+  - base
+  - bytestring
+  - constraints
+  - http-types
+  - mtl
+  - resourcet
   - servant
+  - servant-server
+  - servant-client-core
+  - singletons
+  - wai
 library:
   exposed-modules: 
     - Servant.Dependent
