@@ -13,17 +13,17 @@ extra-doc-files:
   - README.md
   - LICENSE
 dependencies:
-  - base
-  - bytestring
-  - constraints
-  - http-types
-  - mtl
-  - resourcet
-  - servant
-  - servant-server
-  - servant-client-core
-  - singletons
-  - wai
+  - base >= 4.14 && < 4.21 # GHC 8.10 and above
+  - bytestring >=0.10.8.1 && < 0.13
+  - constraints >= 0.13 && < 0.15
+  - http-types >= 0.12.2 && < 0.13
+  - mtl >= 2.2.2 && < 2.4
+  - resourcet >= 1.2.2 && < 1.4
+  - servant >= 0.18 && < 0.21
+  - servant-server >= 0.18 && < 0.21
+  - servant-client-core >= 0.18 && < 0.21
+  - singletons >= 3.0 && < 3.1
+  - wai >= 3.2.1.2 && < 3.3
 library:
   exposed-modules: 
     - Servant.Dependent
