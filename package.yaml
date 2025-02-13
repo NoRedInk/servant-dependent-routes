@@ -29,5 +29,18 @@ library:
     - Servant.Dependent
   source-dirs:
     - src
+
+executables:
+  media:
+    source-dirs: example
+    main: Media
+    dependencies:
+      - servant-dependent-routes
+      - servant-client
+      - singletons-th
+      - aeson
+      - warp
+      - text
+
 ghc-options:
   - -Wall

@@ -46,3 +46,30 @@ library
     , singletons ==3.0.*
     , wai >=3.2.1.2 && <3.3
   default-language: Haskell2010
+
+executable media
+  main-is: Media.hs
+  other-modules:
+      Paths_servant_dependent_routes
+  hs-source-dirs:
+      example
+  ghc-options: -Wall -main-is Media
+  build-depends:
+      aeson
+    , base >=4.14 && <4.21
+    , bytestring >=0.10.8.1 && <0.13
+    , constraints >=0.13 && <0.15
+    , http-types >=0.12.2 && <0.13
+    , mtl >=2.2.2 && <2.4
+    , resourcet >=1.2.2 && <1.4
+    , servant >=0.18 && <0.21
+    , servant-client
+    , servant-client-core >=0.18 && <0.21
+    , servant-dependent-routes
+    , servant-server >=0.18 && <0.21
+    , singletons ==3.0.*
+    , singletons-th
+    , text
+    , wai >=3.2.1.2 && <3.3
+    , warp
+  default-language: Haskell2010
