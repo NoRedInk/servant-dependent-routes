@@ -211,9 +211,9 @@ instance
 -- Only when you absolutely need to.
 --
 -- Generally having overlapping routes is the preferred way handle different kinds of responses at the same URI.
--- servant-server does an excellent job of matching and error reporting in general.
--- However, if your API is /only differentiated by the body/ then you might need `DepReqBody`.
--- servant-server can only read the body once and therefore will throw a non-recoverable error if it fails to match the body of a route.
+-- servant-server does an excellent job of matching overlapping routes and error reporting in general.
+-- However, servant-server can only read the body once and therefore will throw a non-recoverable error if it fails to match the body of a route.
+-- If your API is /only differentiated by the body/ then you might need `DepReqBody`.
 --
 -- Only put combinators inside of `DepReqBody` that need to be there.  They will be parsed in a secondary stage of processing compared to combinators outside.
 --
@@ -237,9 +237,9 @@ instance
 -- >   { title :: Text, director :: Text }
 -- >   deriving (ToJSON, FromJSON)
 --
--- We could craft our API to take in the MediaType and identifier in the body and return the appropriate data in the response.
+-- We could craft our API to take in the MediaType in the body and return the appropriate type of data in the response.
 --
--- > type API = "lookup" :> ReqBody '[JSON] (MediaType, Int) :> GET '[JSON] (BookData | MovieData)
+-- > type API = "lookup" :> Capture "identifier" Text :> ReqBody '[JSON] MediaType :> GET '[JSON] (BookData | MovieData)
 --
 -- How can we pull this off with `DepReqBody`?
 --
