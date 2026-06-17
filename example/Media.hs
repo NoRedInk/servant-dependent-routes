@@ -11,6 +11,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Media where
 
@@ -18,7 +19,7 @@ import Data.Aeson (FromJSON (..), ToJSON (..), defaultOptions, genericParseJSON,
 import Data.Constraint (Dict (..))
 import Data.Kind (Type)
 import Data.Proxy (Proxy (..))
-import Data.Singletons (Apply, type (~>))
+import Data.Singletons (Apply, type (~>), type (@@))
 import Data.Singletons.Sigma (Sigma (..))
 import Data.Singletons.TH (genSingletons)
 import Data.Text (Text)
@@ -26,8 +27,7 @@ import GHC.Generics (Generic)
 import Network.Wai.Handler.Warp (run)
 import Servant.API (Capture, Get, JSON, (:>))
 import Servant.Client (ClientM, client)
-import Servant.Client.Core (RunClient)
-import Servant.Dependent (DepClient (..), DepReqBody, DepServer (DepServer), HasDepClient (..), HasDepServer (..))
+import Servant.Dependent (DepClient (..), DepReqBody, DepServer (DepServer), HasDepConstraint(..))
 import Servant.Server (Application, Handler, serve)
 
 data MediaType
@@ -97,14 +97,8 @@ lookupMedia _identifier =
                 }
     )
 
-instance HasDepServer MkBody MkResponse where
-  hasDepServer _ _ _ s =
-    case s of
-      SBook -> Dict
-      SMovie -> Dict
-
-instance (RunClient m) => HasDepClient MkBody MkResponse m where
-  hasDepClient _ _ _ s =
+instance (con (MkResponse @@ Book), con (MkResponse @@ Movie)) => HasDepConstraint MkResponse con where
+  hasDepConstraint _ _ s = 
     case s of
       SBook -> Dict
       SMovie -> Dict
