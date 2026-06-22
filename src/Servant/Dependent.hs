@@ -9,7 +9,9 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TupleSections #-}
+{-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -32,21 +34,20 @@ module Servant.Dependent
 
     -- * Combinator
     DepReqBody,
+    HasDepConstraint(..),
 
     -- * Server
     DepServer (..),
-    HasDepServer (..),
 
     -- * Client
     DepClient (..),
-    HasDepClient (..),
   )
 where
 
 import Control.Monad.Trans (liftIO)
 import Control.Monad.Trans.Resource (runResourceT)
 import Data.ByteString.Lazy as BSL
-import Data.Constraint (Dict (..))
+import Data.Constraint (Dict (..), Constraint)
 import Data.Kind (Type)
 import Data.Maybe (fromMaybe)
 import Data.Proxy (Proxy (..))
@@ -77,13 +78,14 @@ import Servant.Server.Internal.Router (leafRouter, runRouterEnv)
 -- > type MyApi = "lookup" :> DepReqBody '[JSON] MkBody MkResponse
 data DepReqBody (contentTypes :: [Type]) (body :: ix ~> Type) (route :: ix ~> Type)
 
+-- | Enforce that all potential routes in a `DepReqBody` have the constraint `con`
+-- This is used to provide `HasClient` and `HasServer` instances and certainly can be used for others
+class HasDepConstraint (route :: ix ~> Type) (con :: Type -> Constraint) where
+  hasDepConstraint :: Proxy route -> Proxy con -> Sing (a :: ix) -> Dict (con (route @@ a))
+
 -- | A wrapper around a function that handles routes for all possible @ix@ types
 newtype DepServer (body :: ix ~> Type) (route :: ix ~> Type) (m :: Type -> Type)
   = DepServer (forall (a :: ix). Sing a -> body @@ a -> ServerT (route @@ a) m)
-
--- | A typeclass that captures the `HasServer` instance for all possible routes under the @ix@ types
-class HasDepServer (body :: ix ~> Type) (route :: ix ~> Type) where
-  hasDepServer :: Proxy body -> Proxy route -> Proxy m -> Sing (a :: ix) -> Dict (HasServer (route @@ a) m)
 
 addDepBodyCheck :: Delayed env server -> DelayedIO c -> (c -> DelayedIO sigma) -> Delayed env (sigma, server)
 addDepBodyCheck Delayed {..} newContentD newBodyD =
@@ -109,9 +111,13 @@ runActionM action env req respond k =
     go (FailFatal e) = respond $ FailFatal e
     go (Route a) = let !ka = k a in ka
 
+-- | A typeclass to flip the argument order on `HasServer` so we can use it in conjunction with `HasDepConstraint`
+class HasServer r context => HasServerFlip context r
+instance HasServer r context => HasServerFlip context r
+
 instance
   ( AllCTUnrender contentTypes (Sigma q body),
-    HasDepServer body route,
+    HasDepConstraint route (HasServerFlip context),
     HasContextEntry (MkContextWithErrorFormatter context) ErrorFormatters,
     Typeable body,
     Typeable route,
@@ -125,7 +131,7 @@ instance
   hoistServerWithContext _ pc nt (DepServer f) =
     DepServer
       ( \(s :: Sing a) v ->
-          case hasDepServer (Proxy :: Proxy body) (Proxy :: Proxy route) pc s of
+          case hasDepConstraint (Proxy :: Proxy route) (Proxy :: Proxy (HasServerFlip context)) s of
             Dict ->
               hoistServerWithContext (Proxy :: Proxy (route @@ a)) pc nt (f s v)
       )
@@ -139,7 +145,7 @@ instance
           request
           respond
           ( \((s :: Sing a) :&: v, DepServer subserver) ->
-              case hasDepServer (Proxy :: Proxy body) (Proxy :: Proxy route) (Proxy @context) s of
+              case hasDepConstraint (Proxy :: Proxy route) (Proxy :: Proxy (HasServerFlip context)) s of
                 Dict ->
                   let delayed = emptyDelayed (Route (subserver s v))
                    in runRouterEnv format404 (route (Proxy :: Proxy (route @@ a)) context delayed) env request respond
@@ -169,12 +175,8 @@ instance
 newtype DepClient (body :: ix ~> Type) (route :: ix ~> Type) (m :: Type -> Type)
   = DepClient (forall (a :: ix). Sing a -> body @@ a -> Client m (route @@ a))
 
--- | A typeclass to capture the `HasClient` instances for all possible @ix@ types
-class HasDepClient (body :: ix ~> Type) (route :: ix ~> Type) m where
-  hasDepClient :: Proxy body -> Proxy route -> Proxy m -> Sing (a :: ix) -> Dict (HasClient m (route @@ a))
-
 instance
-  ( HasDepClient body route m,
+  ( HasDepConstraint route (HasClient m),
     RunClient m,
     MimeRender ct (Sigma q body)
   ) =>
@@ -185,7 +187,7 @@ instance
   clientWithRoute pm Proxy req =
     DepClient
       ( \(s :: Sing a) v ->
-          case hasDepClient (Proxy :: Proxy body) (Proxy :: Proxy route) pm s of
+          case hasDepConstraint (Proxy :: Proxy route) (Proxy :: Proxy (HasClient m)) s of
             Dict ->
               clientWithRoute
                 pm
@@ -202,7 +204,7 @@ instance
   hoistClientMonad pm _ f (DepClient run) =
     DepClient
       ( \(s :: Sing a) v ->
-          case hasDepClient (Proxy :: Proxy body) (Proxy :: Proxy route) pm s of
+          case hasDepConstraint (Proxy :: Proxy route) (Proxy :: Proxy (HasClient m)) s of
             Dict ->
               hoistClientMonad pm (Proxy :: Proxy (route @@ a)) f (run s v)
       )
@@ -292,15 +294,15 @@ instance
 -- >      )
 -- >      v
 --
--- Finally we need to provide an instance of `HasDepServer` for our response type to capture
--- the remaining `HasServer` routing information for each possible branch of our index type:
+-- Finally we need to provide an instance of `HasDepConstraint` for our response type to capture
+-- the remaining routing information for each possible branch of our index type:
 --
 -- > import Data.Constraint (Dict(..))
 -- >
 -- > ...
 -- >
--- > instance HasDepServer MkBody MkResponse where
--- >   hasDepServer _ _ _ s =
+-- > instance (con (MkRequest @@ Book), con (MkRequest @@ Movie)) => HasDepConstraint MkResponse con where
+-- >   hasDepConstraint _ _ s =
 -- >     case s of
 -- >       SBook -> Dict
 -- >       SMovie -> Dict
@@ -339,18 +341,8 @@ instance
 -- >       (_, x) ->
 -- >         x
 --
--- And finally we need to provide an instance of `HasDepClient` for our response type to capture
--- the remaining `HasClient` routing information for each possible branch of our index type:
---
--- > import Data.Constraint (Dict(..))
--- >
--- > ...
--- >
--- > instance (RunClient m) => HasDepClient MkBody MkResponse m where
--- >   hasDepClient _ _ _ s =
--- >     case s of
--- >       SBook -> Dict
--- >       SMovie -> Dict
+-- We reuse the same `HasDepConstraint` instance from the server side, which also satisfies
+-- the client's routing constraints.
 --
 -- == Further Reading
 --
