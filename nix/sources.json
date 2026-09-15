@@ -1,4 +1,16 @@
 {
+    "haskell-language-server-2_14_0_0": {
+        "branch": "2.14.0.0",
+        "description": "Official Haskell IDE support via the language server protocol (LSP)",
+        "homepage": "",
+        "owner": "haskell",
+        "repo": "haskell-language-server",
+        "rev": "096d797bddaca372156ce85d6b3f6926d6da0c88",
+        "sha256": "15w3a9a58979dj3rngykv18j2iiciaw1v4rxnlgg2lalpq3dwfy5",
+        "type": "tarball",
+        "url": "https://github.com/haskell/haskell-language-server/archive/096d797bddaca372156ce85d6b3f6926d6da0c88.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "nixpkgs": {
         "branch": "release-26.05",
         "description": "Nix Packages collection",
