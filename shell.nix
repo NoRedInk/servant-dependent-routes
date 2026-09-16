@@ -72,4 +72,10 @@ pkgs.mkShell {
     nixfmt
     zlib
   ];
+
+  # just adding `zlib` to `buildInputs` doesn't seem to work?  we need to
+  # prepend `LD_LIBRARY_PATH` manually too
+  shellHook = ''
+    export LD_LIBRARY_PATH="${pkgs.zlib}/lib:$LD_LIBRARY_PATH"
+  '';
 }
