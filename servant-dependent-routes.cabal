@@ -1,6 +1,6 @@
 cabal-version: 1.18
 
--- This file has been generated from package.yaml by hpack version 0.36.0.
+-- This file has been generated from package.yaml by hpack version 0.38.3.
 --
 -- see: https://github.com/sol/hpack
 
@@ -34,7 +34,7 @@ library
       src
   ghc-options: -Wall
   build-depends:
-      base >=4.14 && <4.21
+      base >=4.14 && <4.22
     , bytestring >=0.10.8.1 && <0.13
     , constraints >=0.13 && <0.15
     , http-types >=0.12.2 && <0.13
@@ -56,7 +56,7 @@ executable media
   ghc-options: -Wall -main-is Media
   build-depends:
       aeson
-    , base >=4.14 && <4.21
+    , base >=4.14 && <4.22
     , bytestring >=0.10.8.1 && <0.13
     , constraints >=0.13 && <0.15
     , http-types >=0.12.2 && <0.13

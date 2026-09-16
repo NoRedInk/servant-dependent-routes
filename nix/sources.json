@@ -1,14 +1,26 @@
 {
+    "haskell-language-server-2_14_0_0": {
+        "branch": "2.14.0.0",
+        "description": "Official Haskell IDE support via the language server protocol (LSP)",
+        "homepage": "",
+        "owner": "haskell",
+        "repo": "haskell-language-server",
+        "rev": "096d797bddaca372156ce85d6b3f6926d6da0c88",
+        "sha256": "15w3a9a58979dj3rngykv18j2iiciaw1v4rxnlgg2lalpq3dwfy5",
+        "type": "tarball",
+        "url": "https://github.com/haskell/haskell-language-server/archive/096d797bddaca372156ce85d6b3f6926d6da0c88.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "nixpkgs": {
-        "branch": "release-25.11",
+        "branch": "release-26.05",
         "description": "Nix Packages collection",
         "homepage": null,
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "9e1cfa7f745a32223ea4c4513c88be7936a800b6",
-        "sha256": "1nk1w3d5axafaccdmd5cfm4x1g9wcrl2jqf3p6r39kcs5azc41zn",
+        "rev": "f09cd53ad9cfc51c2ca7acc3ab8bc7b5b2d37156",
+        "sha256": "06z0nvgw2xrl0ffdnixxx1bzyiaypgaggp4k3njraxhkr44sy7j7",
         "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs/archive/9e1cfa7f745a32223ea4c4513c88be7936a800b6.tar.gz",
+        "url": "https://github.com/NixOS/nixpkgs/archive/f09cd53ad9cfc51c2ca7acc3ab8bc7b5b2d37156.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
         "version": "release-24.05"
     }
